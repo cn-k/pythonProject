@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-deployment
+  template:
+    metadata:
+      labels:
+        app: test-deployment
+    spec:
+      containers:
+      - name: docker-metrics
+        image: registry.172.12.2.63.nip.io/docker-metrics:latest
+        volumeMounts:
+        - mountPath: /var/run/docker.sock
+          name: sock-volume
+        - mountPath: /usr/bin/docker
+          name: docker-volume
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "2048Mi"
+            cpu: "500m"
+          limits:
+            memory: "4096Mi"
+            cpu: "3000m"
+      volumes:
+      - name: sock-volume
+        hostPath:
+          path: /var/run/docker.sock
+      - name: docker-volume
+        hostPath:
+          path: /usr/bin/docker
